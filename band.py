@@ -1,10 +1,35 @@
 from config import db_connection,db_cursor
 class Band:
     all={}
-    def __init__(self,name,hometown) -> None:
+    def __init__(self,name,hometown) :
         self.name=name
         self.hometown=hometown
 
+    def __repr__(self) -> str:
+        return f"< Band name:{self.name} hometown:{self.hometown} >"
+    
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self,name):
+        if type(name)==str and len(name)>=3:
+            self._name=name
+        else:
+            raise TypeError("Band name must be a string of minimum length 3!")
+        
+    @property
+    def hometown(self):
+        return self._hometown
+
+    @hometown.setter
+    def hometown(self,hometown):
+        if type(hometown)==str and len(hometown)>=3:
+            self._hometown=hometown
+        else:
+            raise TypeError("Band name must be a string of minimum length 3!")
+       
     @classmethod
     def create_table(cls):
         sql="""
@@ -120,5 +145,9 @@ class Band:
             """
         rows=db_cursor.execute(sql).fetchall()
         rows1=sorted(rows, key=lambda item:item[1])
-        return rows1[-1][0]
+        sql1="""
+            SELECT * FROM bands WHERE name=?
+            """
+        row=db_cursor.execute(sql1,(rows1[-1][0],)).fetchone()
+        return cls.instance_from_db(row)
         

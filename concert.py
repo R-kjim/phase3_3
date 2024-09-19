@@ -8,6 +8,8 @@ class Concert:
         self.band1=band1
         self.venue1=venue1
         
+    def __repr__(self) -> str:
+        return f"<Concert: date:{self.date} band:{self.band1.name} venue:{self.venue1.title}>"
 
     @property
     def band1(self):
@@ -119,6 +121,7 @@ class Concert:
             SELECT * FROM concerts INNER JOIN bands ON concerts.venue=bands.hometown
             """
         rows=db_cursor.execute(sql).fetchall()
+        
         return self in [Concert.instance_from_db(row) for row in rows]
     
     def introduction(self):

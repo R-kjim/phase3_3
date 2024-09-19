@@ -5,6 +5,31 @@ class Venue:
         self.title=title
         self.city=city
 
+    def __repr__(self) -> str:
+        return f"< Venue Title: {self.title} City:{self.city} >"
+    @property
+    def title(self):
+        return self._title
+    
+    @title.setter
+    def title(self,title):
+        if type(title)==str and len(title)>=3:
+            self._title=title
+        else:
+            raise TypeError("Title must be a string of length greater than or equal to 3!")
+        
+    
+    @property
+    def city(self):
+        return self._city
+    
+    @city.setter
+    def city(self,city):
+        if type(city)==str and len(city)>=3:
+            self._city=city
+        else:
+            raise TypeError("Title must be a string of length greater than or equal to 3!")
+     
     @classmethod
     def create_table(cls):
         sql="""
@@ -105,10 +130,14 @@ class Venue:
         return Concert.instance_from_db(row) if row else None
     
     def most_frequent_band(self):
-        from concert import Concert
+        from band import Band
         sql="""
             SELECT band , COUNT(*) FROM concerts WHERE venue=? GROUP BY band 
             """
         rows=db_cursor.execute(sql,(self.city,)).fetchall()
         row1=sorted(rows,key=lambda item:item[1])
-        return row1[-1][0]
+        sql1="""
+            SELECT * FROM bands WHERE name=?
+            """
+        row=db_cursor.execute(sql1,(row1[-1][0],)).fetchone()
+        return Band.instance_from_db(row)
